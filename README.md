@@ -1,7 +1,7 @@
 # NSBM Super App - System Backend
 
 ---
-Currently available services thorugh API:
+Currently available services through API:
 
 | Service                     | Status  |
 |-----------------------------|---------|
