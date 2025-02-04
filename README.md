@@ -5,11 +5,12 @@ Currently available services through API:
 
 | Service                     | Status  |
 |-----------------------------|---------|
-| Basic User Auth and Login   | ✔       |
+| User Registration           | ✔       |
+| User Auth and Login         | ✔       |
 | API Key Generation          | ✔       |
 | Oauthv2 Authentication      | ❌      |
 | Access Point Count data     | ❌      |
-| Database Access             | ➖       |
+| Database Access             | ✔       |
 
 More Services yet to develop...
 
@@ -43,14 +44,22 @@ python run.py
 
 1. User Registration
 ```
-curl -X POST http://127.0.0.1:5000/auth/register -H "Content-Type: application/json" \
--d '{"username": "testuser", "password": "testpass"}'
+curl -X POST http://127.0.0.1:5000/auth/register -H "Content-Type: application/json" -d '{
+  "user_id": "12345",
+  "full_name": "Test User",
+  "email": "testuser@example.com",
+  "password": "testpw",
+  "phone_number": "+1234567890",
+  "user_type": "regular",
+  "profile_picture": "https://example.com/profile.jpg",
+  "created_at": "2024-02-04T12:00:00Z",
+  "updated_at": "2024-02-04T12:00:00Z"
+}'
 ```
 
 2. User Login and receive token
 ```
-curl -X POST http://127.0.0.1:5000/auth/login -H "Content-Type: application/json" \
--d '{"username": "testuser", "password": "testpass"}'
+curl -X POST http://127.0.0.1:5000/auth/login -H "Content-Type: application/json" -d '{"user_id": "12345", "password":url -X POST http://127.0.0.1:5000/auth/login -H "Content-Type: application/json" -d '{"user_id": "12345", "password": "testpw"}'
 ```
 
 3. Store Data
