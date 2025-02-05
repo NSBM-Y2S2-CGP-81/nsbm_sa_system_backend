@@ -30,7 +30,7 @@ def register_user(data):
     return jsonify({"message": "User registered successfully"}), 201
 
 def login_user(data):
-    user = mongo.db.users.find_one({"user_id": data["user_id"]})
+    user = mongo.db.users.find_one({"email": data["email"]})
     if not user or not bcrypt.check_password_hash(user["password"], data["password"]):
         return jsonify({"error": "Invalid credentials"}), 401
 

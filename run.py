@@ -3,7 +3,6 @@ from app.config import db
 
 
 def initialize_database():
-    # Create collections if they don't exist
     collections = ['users', 'students', 'lecturers', 'staff', 'vendors', 'events', 'event_registrations', 'timetable', 'food_orders', 'food_order_items', 'queue_management', 'campus_facilities', 'payments']
     
     for collection_name in collections:
