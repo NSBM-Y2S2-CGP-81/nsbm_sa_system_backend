@@ -12,6 +12,7 @@ def register_user(data):
 
     existing_user = mongo.db.users.find_one({"email": data["email"]})
     if existing_user:
+        print("User already exists")
         return jsonify({"error": "User already exists"}), 409
 
     hashed_pw = bcrypt.generate_password_hash(data["password"]).decode('utf-8')
