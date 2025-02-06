@@ -26,13 +26,13 @@ def register_user(data):
         "created_at": data["created_at"],
         "updated_at": data["updated_at"]
     })
-
-    return jsonify({"message": "User registered successfully"}), 201
+    access_token = create_access_token(identity=data["email"])
+    return jsonify({"message": "User registered successfully", "access_token": access_token}), 201
 
 def login_user(data):
     user = mongo.db.users.find_one({"email": data["email"]})
     if not user or not bcrypt.check_password_hash(user["password"], data["password"]):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = create_access_token(identity=user["user_id"])
+    access_token = create_access_token(identity=user["email"])
     return jsonify({"access_token": access_token}), 200
