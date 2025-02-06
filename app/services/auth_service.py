@@ -4,7 +4,7 @@ from flask_jwt_extended import create_access_token
 
 def register_user(data):
     required_fields = [
-    "user_id", "full_name", "email", "password", "phone_number",
+    "full_name", "email", "password", "phone_number",
     "user_type", "profile_picture", "created_at", "updated_at"
     ]
     if not all(data.get(field) for field in required_fields):
