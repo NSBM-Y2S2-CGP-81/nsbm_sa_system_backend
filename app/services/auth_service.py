@@ -4,7 +4,7 @@ from flask_jwt_extended import create_access_token
 
 def register_user(data):
     required_fields = [
-    "user_id", "full_name", "email", "password", "phone_number", 
+    "user_id", "full_name", "email", "password", "phone_number",
     "user_type", "profile_picture", "created_at", "updated_at"
     ]
     if not all(data.get(field) for field in required_fields):
@@ -16,7 +16,6 @@ def register_user(data):
 
     hashed_pw = bcrypt.generate_password_hash(data["password"]).decode('utf-8')
     mongo.db.users.insert_one({
-        "user_id": data["user_id"],
         "full_name": data["full_name"],
         "email": data["email"],
         "password": hashed_pw,
