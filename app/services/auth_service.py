@@ -10,7 +10,7 @@ def register_user(data):
     if not all(data.get(field) for field in required_fields):
         return {"error": "Missing required fields"}
 
-    existing_user = mongo.db.users.find_one({"user_id": data["user_id"]})
+    existing_user = mongo.db.users.find_one({"email": data["email"]})
     if existing_user:
         return jsonify({"error": "User already exists"}), 409
 
