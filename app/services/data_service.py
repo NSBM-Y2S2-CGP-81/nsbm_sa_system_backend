@@ -1,10 +1,37 @@
+# app/services/data_service.py
+from app.config import db
+from bson import ObjectId
 from flask import jsonify
-from app import mongo
 
-def store_data(data):
-    mongo.db.data.insert_one(data)
-    return jsonify({"message": "Data stored successfully"}), 201
+def get_collection(collection_name):
+    """Get a MongoDB collection by its name."""
+    return db[collection_name]
 
-def fetch_data():
-    data = list(mongo.db.data.find({}, {"_id": 0}))
-    return jsonify(data), 200
+def fetch_all_data(collection_name):
+    try:
+        collection = get_collection(collection_name)
+        records = list(collection.find())
+        for record in records:
+            record['_id'] = str(record['_id'])  # Convert ObjectId to string
+        return jsonify(records), 200
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+def store_data(collection_name, data):
+    try:
+        collection = get_collection(collection_name)
+        result = collection.insert_one(data)
+        return {"message": "Data stored successfully", "id": str(result.inserted_id)}, 201
+    except Exception as e:
+        return {"error": str(e)}, 400
+
+def fetch_data_by_id(collection_name, record_id):
+    try:
+        collection = get_collection(collection_name)
+        record = collection.find_one({"_id": ObjectId(record_id)})
+        if record:
+            record['_id'] = str(record['_id'])
+            return jsonify(record), 200
+        return {"error": "Record not found"}, 404
+    except Exception as e:
+        return {"error": str(e)}, 500
