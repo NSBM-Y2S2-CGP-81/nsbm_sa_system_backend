@@ -3,7 +3,7 @@ from app.config import db
 
 
 def initialize_database():
-    collections = ['users', 'students', 'lecturers', 'staff', 'vendors', 'events', 'event_registrations', 'timetable', 'food_orders', 'food_order_items', 'queue_management', 'campus_facilities', 'payments']
+    collections = ['users', 'students', 'lecturers', 'staff', 'vendors', 'events', 'event_registrations', 'timetable', 'food_orders', 'food_order_items', 'queue_management', 'campus_facilities', 'payments', 'todays_pick', 'news']
     
     for collection_name in collections:
         if collection_name not in db.list_collection_names():
