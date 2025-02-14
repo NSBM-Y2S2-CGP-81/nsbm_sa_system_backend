@@ -35,4 +35,12 @@ def login_user(data):
         return jsonify({"error": "Invalid credentials"}), 401
 
     access_token = create_access_token(identity=user["email"])
-    return jsonify({"access_token": access_token}), 200
+    return jsonify({
+        "access_token": access_token,
+        "full_name": user["name"],
+        "email": user["email"],
+        "phone_number": user["phone_number"],
+        "user_type": user["user_type"],
+        "profile_picture": user["profile_picture"],
+        "password": user["password"],
+    }), 200

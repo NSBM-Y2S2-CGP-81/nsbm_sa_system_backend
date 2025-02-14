@@ -9,6 +9,8 @@ def get_collection(collection_name):
 
 def fetch_all_data(collection_name):
     try:
+        if collection_name == "users":
+            return {"error": "Access denied"}, 403
         collection = get_collection(collection_name)
         records = list(collection.find())
         for record in records:
