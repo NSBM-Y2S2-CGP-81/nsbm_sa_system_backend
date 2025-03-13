@@ -3,6 +3,7 @@ from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
+from app.services.system_status_service import start_monitoring
 import os
 
 load_dotenv()
@@ -17,6 +18,11 @@ def create_app():
     # Load config
     app.config["MONGO_URI"] = os.getenv("MONGO_URI")
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+
+    print("NSBM-SA-BACKEND STARTED !")
+    print("Starting system status monitoring to background...")
+    start_monitoring()
+    print("Monitoring started !")
 
     # Initialize extensions
     mongo.init_app(app)
