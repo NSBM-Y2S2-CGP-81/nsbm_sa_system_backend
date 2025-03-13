@@ -1,4 +1,3 @@
-# app/services/sys_stats_service.py
 import psutil
 import threading
 import time
@@ -10,7 +9,7 @@ def get_collection():
     return db["admin_sys_stats"]
 
 def collect_system_stats():
-    """Collect CPU, RAM, and Network utilization stats."""
+    """Collect CPU, RAM, Network, and Storage utilization stats."""
     return {
         "cpu_usage": psutil.cpu_percent(interval=1),
         "ram_usage": psutil.virtual_memory().percent,
@@ -18,6 +17,7 @@ def collect_system_stats():
             "bytes_sent": psutil.net_io_counters().bytes_sent,
             "bytes_received": psutil.net_io_counters().bytes_recv
         },
+        "storage_usage": psutil.disk_usage('/').percent,  # Only store the percentage
         "timestamp": datetime.utcnow()
     }
 
