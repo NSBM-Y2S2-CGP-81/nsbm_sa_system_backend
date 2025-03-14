@@ -16,5 +16,5 @@ app = create_app()
 
 if __name__ == "__main__":
     initialize_database()
-    app.config["MONGO_URI"] = "mongodb://localhost:27017"
+    app.config["MONGO_URI"] = "mongodb://0.0.0.0:27017/nsbm_sa"
     app.run(host="0.0.0.0", port=5000, debug=True)
