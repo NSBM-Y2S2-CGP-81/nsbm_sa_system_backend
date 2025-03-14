@@ -40,11 +40,11 @@ def login_user(data):
     }), 200
 
 def admin_login(data):
-    admin = mongo.db.admin.find_one({"email": data["email"]})
-    if not admin or not bcrypt.check_password_hash(admin["password"], data["password"]):
+    admins = mongo.db.admin.find_one({"email": data["email"]})
+    if not admins or not bcrypt.check_password_hash(admins["password"], data["password"]):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = create_access_token(identity=admin["email"])
+    access_token = create_access_token(identity=admins["email"])
     return jsonify({
         "access_token": access_token
     }), 200
