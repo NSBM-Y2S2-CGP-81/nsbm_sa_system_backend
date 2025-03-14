@@ -36,11 +36,15 @@ def login_user(data):
 
     access_token = create_access_token(identity=user["email"])
     return jsonify({
-        "access_token": access_token,
-        "full_name": user["full_name"],
-        "email": user["email"],
-        "phone_number": user["phone_number"],
-        "user_type": user["user_type"],
-        "profile_picture": user["profile_picture"],
-        "password": user["password"],
+        "access_token": access_token
+    }), 200
+
+def admin_login(data):
+    admin = mongo.db.admin.find_one({"email": data["email"]})
+    if not admin or not bcrypt.check_password_hash(admin["password"], data["password"]):
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    access_token = create_access_token(identity=admin["email"])
+    return jsonify({
+        "access_token": access_token
     }), 200
