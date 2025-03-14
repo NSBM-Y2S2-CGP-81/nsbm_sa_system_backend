@@ -16,4 +16,5 @@ def login():
 @auth_bp.route('/admin', methods=['POST'])
 def admin():
     data = request.json
+    print(data)
     return admin_login(data)
