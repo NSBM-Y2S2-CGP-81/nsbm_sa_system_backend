@@ -1,4 +1,3 @@
-# app/services/data_service.py
 from app.config import db
 from bson import ObjectId
 from flask import jsonify
@@ -9,7 +8,7 @@ def get_collection(collection_name):
 
 def fetch_all_data(collection_name):
     try:
-        if collection_name == "users":
+        if collection_name == "users" or collection_name == "admin":
             return {"error": "Access denied"}, 403
         collection = get_collection(collection_name)
         records = list(collection.find())

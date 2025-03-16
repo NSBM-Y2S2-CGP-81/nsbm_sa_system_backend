@@ -22,6 +22,11 @@ def register_user(data):
         "password": hashed_pw,
         "phone_number": data["phone_number"],
         "user_type": data["user_type"],
+        "student_id": data["student_id"],
+        "intake": data["intake"],
+        "degree": data["degree"],
+        "university": data["university"],
+        "nic": data["nic"],
         "profile_picture": data["profile_picture"],
         "created_at": data["created_at"],
         "updated_at": data["updated_at"]

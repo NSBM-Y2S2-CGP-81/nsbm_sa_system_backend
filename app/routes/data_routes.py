@@ -8,6 +8,8 @@ data_bp = Blueprint('data', __name__)
 @data_bp.route('/<collection_name>/store', methods=['POST'])
 @jwt_required()
 def store(collection_name):
+    if collection_name == "users" or collection_name == "admin":
+        return {"error": "Access denied"}, 403
     data = request.json
     return store_data(collection_name, data)
 
