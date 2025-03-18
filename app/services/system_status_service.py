@@ -17,7 +17,7 @@ def collect_system_stats():
             "bytes_sent": psutil.net_io_counters().bytes_sent,
             "bytes_received": psutil.net_io_counters().bytes_recv
         },
-        "storage_usage": psutil.disk_usage('/').percent,  # Only store the percentage
+        "storage_usage": psutil.disk_usage('/').percent,
         "timestamp": datetime.utcnow()
     }
 
@@ -32,6 +32,17 @@ def delete_old_stats():
     except Exception as e:
         print(f"Error deleting old system stats: {e}")
 
+def delete_if_exceeds_limit():
+    """Delete all system stats if the collection has more than 500 documents."""
+    try:
+        collection = get_collection()
+        count = collection.count_documents({})
+        if count > 500:
+            result = collection.delete_many({})
+            print(f"Collection exceeded limit. Deleted all {result.deleted_count} records.")
+    except Exception as e:
+        print(f"Error checking/deleting system stats: {e}")
+
 def store_system_stats():
     """Collect and store system stats in MongoDB every second."""
     cleanup_interval = 60  # Cleanup every 60 iterations (~1 min)
@@ -40,9 +51,11 @@ def store_system_stats():
     while True:
         try:
             collection = get_collection()
+            delete_if_exceeds_limit()  # Check and delete if necessary
+
             stats = collect_system_stats()
             collection.insert_one(stats)
-            print(f"Stored system stats: {stats}")  # Log to console
+            print(f"Stored system stats: {stats}")
 
             count += 1
             if count >= cleanup_interval:
@@ -50,9 +63,8 @@ def store_system_stats():
                 count = 0  # Reset counter after cleanup
         except Exception as e:
             print(f"Error storing system stats: {e}")
-        time.sleep(1)  # Wait 1 second before collecting again
+        time.sleep(1)
 
-# Run the stats collection in a background thread
 def start_monitoring():
     """Start the system monitoring in a separate thread."""
     thread = threading.Thread(target=store_system_stats, daemon=True)
