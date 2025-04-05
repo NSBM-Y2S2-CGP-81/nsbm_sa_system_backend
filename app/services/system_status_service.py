@@ -4,9 +4,11 @@ import time
 from app.config import db
 from datetime import datetime, timedelta
 
+
 def get_collection():
     """Get the MongoDB collection for system stats."""
     return db["admin_sys_stats"]
+
 
 def collect_system_stats():
     """Collect CPU, RAM, Network, and Storage utilization stats."""
@@ -21,6 +23,7 @@ def collect_system_stats():
         "timestamp": datetime.utcnow()
     }
 
+
 def delete_old_stats():
     """Delete system stats older than a day."""
     try:
@@ -32,6 +35,7 @@ def delete_old_stats():
     except Exception as e:
         print(f"Error deleting old system stats: {e}")
 
+
 def delete_if_exceeds_limit():
     """Delete all system stats if the collection has more than 500 documents."""
     try:
@@ -39,19 +43,21 @@ def delete_if_exceeds_limit():
         count = collection.count_documents({})
         if count > 500:
             result = collection.delete_many({})
-            print(f"Collection exceeded limit. Deleted all {result.deleted_count} records.")
+            print(f"Collection exceeded limit. Deleted all {
+                  result.deleted_count} records.")
     except Exception as e:
         print(f"Error checking/deleting system stats: {e}")
 
+
 def store_system_stats():
     """Collect and store system stats in MongoDB every second."""
-    cleanup_interval = 60  # Cleanup every 60 iterations (~1 min)
+    cleanup_interval = 60
     count = 0
 
     while True:
         try:
             collection = get_collection()
-            delete_if_exceeds_limit()  # Check and delete if necessary
+            delete_if_exceeds_limit()
 
             stats = collect_system_stats()
             collection.insert_one(stats)
@@ -64,6 +70,7 @@ def store_system_stats():
         except Exception as e:
             print(f"Error storing system stats: {e}")
         time.sleep(1)
+
 
 def start_monitoring():
     """Start the system monitoring in a separate thread."""
