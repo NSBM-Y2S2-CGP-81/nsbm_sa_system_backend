@@ -3,8 +3,12 @@ from app.config import db
 from pymongo.errors import OperationFailure
 
 def initialize_database():
-    # Create collections if they don't exist
-    collections = ['users', 'students', 'lecturers', 'staff', 'vendors', 'events', 'event_registrations', 'timetable', 'food_orders', 'food_order_items', 'queue_management', 'campus_facilities', 'payments', 'todays_pick', 'news', 'crowd_uplink']
+    collections = [
+        'users', 'students', 'lecturers', 'staff', 'vendors',
+        'events', 'event_registrations', 'timetable', 'food_orders',
+        'food_order_items', 'queue_management', 'campus_facilities',
+        'payments', 'todays_pick', 'news', 'crowd_uplink'
+    ]
 
     for collection_name in collections:
         if collection_name not in db.list_collection_names():
@@ -12,18 +16,18 @@ def initialize_database():
             print(f"Collection '{collection_name}' created.")
         else:
             print(f"Collection '{collection_name}' already exists.")
-    admin_db = db.client["admin"]
+
     try:
-        admin_db.command("createUser", "admin@gmail.com",
-                         pwd="p4w4n10324",
-                         roles=[
-                             {"role": "userAdminAnyDatabase", "db": "admin"},
-                             {"role": "readWriteAnyDatabase", "db": "admin"}
-                         ])
-        print("✅ Admin user created successfully.")
+        db.command("createUser", "admin@gmail.com",
+                   pwd="p4w4n10324",
+                   roles=[
+                       {"role": "readWrite", "db": db.name},
+                       {"role": "dbAdmin", "db": db.name}
+                   ])
+        print("✅ Admin user created successfully in database:", db.name)
     except OperationFailure as e:
         if "already exists" in str(e):
-            print("⚠️ Admin user already exists.")
+            print("⚠️ Admin user already exists in database:", db.name)
         else:
             print("❌ Failed to create admin user:", e)
 
