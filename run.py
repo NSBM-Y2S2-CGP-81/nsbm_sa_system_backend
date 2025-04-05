@@ -14,8 +14,8 @@ def initialize_database():
             print(f"Collection '{collection_name}' already exists.")
     admin_db = db.client["admin"]
     try:
-        admin_db.command("createUser", "admin",
-                         pwd="admin1234",
+        admin_db.command("createUser", "admin@gmail.com",
+                         pwd="p4w4n10324",
                          roles=[
                              {"role": "userAdminAnyDatabase", "db": "admin"},
                              {"role": "readWriteAnyDatabase", "db": "admin"}
