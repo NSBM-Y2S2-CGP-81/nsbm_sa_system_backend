@@ -43,8 +43,7 @@ def delete_if_exceeds_limit():
         count = collection.count_documents({})
         if count > 500:
             result = collection.delete_many({})
-            print(f"Collection exceeded limit. Deleted all {
-                  result.deleted_count} records.")
+            print(f"Collection exceeded limit. Deleted all {result.deleted_count} records.")
     except Exception as e:
         print(f"Error checking/deleting system stats: {e}")
 
