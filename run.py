@@ -17,20 +17,6 @@ def initialize_database():
         else:
             print(f"Collection '{collection_name}' already exists.")
 
-    try:
-        db.command("createUser", "admin@gmail.com",
-                   pwd="p4w4n10324",
-                   roles=[
-                       {"role": "readWrite", "db": db.name},
-                       {"role": "dbAdmin", "db": db.name}
-                   ])
-        print("✅ Admin user created successfully in database:", db.name)
-    except OperationFailure as e:
-        if "already exists" in str(e):
-            print("⚠️ Admin user already exists in database:", db.name)
-        else:
-            print("❌ Failed to create admin user:", e)
-
 app = create_app()
 
 if __name__ == "__main__":

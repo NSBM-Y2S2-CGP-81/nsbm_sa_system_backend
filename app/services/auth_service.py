@@ -60,7 +60,13 @@ def admin_login(data):
     if not admins or not bcrypt.check_password_hash(admins["password"], data["password"]):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = create_access_token(identity=admins["email"])
+    additional_claims = {
+        "user_type": "admin",
+        "role": "superuser",
+        "admin_id": str(admins.get("_id"))
+    }
+    access_token = create_access_token(identity=admins["email"], additional_claims=additional_claims)
     return jsonify({
-        "access_token": access_token
+        "access_token": access_token,
+        "message": "Admin logged in successfully"
     }), 200
