@@ -28,7 +28,7 @@ def store_data(collection_name, data):
     except Exception as e:
         return {"error": str(e)}, 400
 
-def fetch_data_by_id(collection_name, record_id):=
+def fetch_data_by_id(collection_name, record_id):
     try:
         collection = get_collection(collection_name)
         record = collection.find_one({"_id": ObjectId(record_id)})
