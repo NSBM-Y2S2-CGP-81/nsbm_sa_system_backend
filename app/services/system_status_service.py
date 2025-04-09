@@ -3,7 +3,9 @@ import threading
 import time
 from app.config import db
 from datetime import datetime, timedelta
+from app.services.loggerService import LoggerService
 
+logger = LoggerService()
 
 def get_collection():
     """Get the MongoDB collection for system stats."""
@@ -31,9 +33,9 @@ def delete_old_stats():
         cutoff_time = datetime.utcnow() - timedelta(days=1)
         result = collection.delete_many({"timestamp": {"$lt": cutoff_time}})
         if result.deleted_count:
-            print(f"Deleted {result.deleted_count} old records.")
+            logger.info(f"Deleted {result.deleted_count} old records.")
     except Exception as e:
-        print(f"Error deleting old system stats: {e}")
+        logger.error(f"Error deleting old system stats: {e}")
 
 
 def delete_if_exceeds_limit():
@@ -43,9 +45,9 @@ def delete_if_exceeds_limit():
         count = collection.count_documents({})
         if count > 500:
             result = collection.delete_many({})
-            print(f"Collection exceeded limit. Deleted all {result.deleted_count} records.")
+            logger.warning(f"Collection exceeded limit. Deleted all {result.deleted_count} records.")
     except Exception as e:
-        print(f"Error checking/deleting system stats: {e}")
+        logger.error(f"Error checking/deleting system stats: {e}")
 
 
 def store_system_stats():
@@ -60,14 +62,14 @@ def store_system_stats():
 
             stats = collect_system_stats()
             collection.insert_one(stats)
-            print(f"Stored system stats: {stats}")
+            logger.info(f"Stored system stats: CPU {stats['cpu_usage']}%, RAM {stats['ram_usage']}%, Storage {stats['storage_usage']}%")
 
             count += 1
             if count >= cleanup_interval:
                 delete_old_stats()
                 count = 0  # Reset counter after cleanup
         except Exception as e:
-            print(f"Error storing system stats: {e}")
+            logger.error(f"Error storing system stats: {e}")
         time.sleep(1)
 
 

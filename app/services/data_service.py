@@ -4,7 +4,9 @@ from bson import ObjectId
 from flask import jsonify
 from flask import request
 from datetime import datetime
+from app.services.loggerService import LoggerService
 
+logger = LoggerService()
 
 
 def get_collection(collection_name):

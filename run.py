@@ -1,6 +1,9 @@
 from app import create_app
 from app.config import db
 from pymongo.errors import OperationFailure
+from app.services.loggerService import LoggerService
+
+logger = LoggerService()
 
 def initialize_database():
     collections = [
@@ -13,9 +16,9 @@ def initialize_database():
     for collection_name in collections:
         if collection_name not in db.list_collection_names():
             db.create_collection(collection_name)
-            print(f"Collection '{collection_name}' created.")
+            logger.info(f"Collection '{collection_name}' created.")
         else:
-            print(f"Collection '{collection_name}' already exists.")
+            logger.info(f"Collection '{collection_name}' already exists.")
 
 app = create_app()
 
