@@ -58,7 +58,7 @@ def store_data(collection_name, data=None):
             return {
                 "message": "Event created successfully",
                 "id": str(result.inserted_id)
-            }, 201
+            }, 200
 
         else:
             if data is None:
