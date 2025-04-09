@@ -14,9 +14,8 @@ def is_admin():
 def store(collection_name):
     if collection_name in ["users", "admins"] and not is_admin():
         return jsonify({"error": "Elevated privileges required"}), 403
-
-    # Let store_data handle both JSON and multipart/form-data
-    return store_data(collection_name)
+    data = request.json
+    return store_data(collection_name,data)
 
 @data_bp.route('/<collection_name>/fetch', methods=['GET'])
 @jwt_required()
