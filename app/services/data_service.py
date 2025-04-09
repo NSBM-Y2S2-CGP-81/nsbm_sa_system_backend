@@ -23,11 +23,12 @@ def fetch_all_data(collection_name):
 def store_data(collection_name, data):
     try:
         if collection_name == "event_requests" and "selectedDate" in data:
+            print('debug:',data)
             from datetime import datetime
             selected_date = datetime.strptime(data["selectedDate"], "%Y-%m-%d").date()
             today = datetime.now().date()
             if selected_date <= today:
-                return {"message": "Invalid Date"}, 909
+                return {"message": "Invalid Date"}, 401
 
         collection = get_collection(collection_name)
         result = collection.insert_one(data)
