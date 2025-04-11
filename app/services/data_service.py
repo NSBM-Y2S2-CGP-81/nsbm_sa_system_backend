@@ -31,6 +31,12 @@ def store_data(collection_name, data):
             if selected_date <= today:
                 return {"message": "Invalid Date"}, 401
 
+        if collection_name == "event_registrations":
+            collection = get_collection(collection_name)
+            existing_registration = collection.find_one({"user_email": data.get("user_email"), "event_id": data.get("event_id")})
+            if existing_registration:
+                return {"message": "User already signed up for this event"}, 409
+
         collection = get_collection(collection_name)
         result = collection.insert_one(data)
         return {"message": "Data stored successfully", "id": str(result.inserted_id)}, 201
@@ -99,4 +105,18 @@ def update_data(collection_name, record_id, updated_data):
 
     except Exception as e:
         logger.error(f"Error updating data in {collection_name}: {e}")
+        return {"error": str(e)}, 500
+
+
+def count_field_occurrences(collection_name, field_name, field_value):
+    """
+    Count how many times a specific field value is repeated in a collection.
+    """
+    try:
+        collection = get_collection(collection_name)
+        count = collection.count_documents({field_name: field_value})
+        logger.info(f"Counted {count} occurrences of {field_name}='{field_value}' in {collection_name} collection.")
+        return {"count": count}, 200
+    except Exception as e:
+        logger.error(f"Error counting occurrences in {collection_name}: {e}")
         return {"error": str(e)}, 500
