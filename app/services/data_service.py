@@ -49,9 +49,9 @@ def fetch_data_by_id(collection_name, record_id):
     except Exception as e:
         return {"error": str(e)}, 500
 
-def delete_event_request(record_id):
+def delete_event_request(collection_name, record_id):
     try:
-        collection = get_collection('event_requests')
+        collection = get_collection(collection_name)
         result = collection.delete_one({"_id": ObjectId(record_id)})
 
         if result.deleted_count:
@@ -64,10 +64,10 @@ def delete_event_request(record_id):
         logger.error(f"Error deleting event request: {e}")
         return {"error": str(e)}, 500
 
-def approve_event_request(record_id):
+def approve_event_request(collection_name, record_id):
     try:
         # Get the event request
-        event_requests_collection = get_collection('event_requests')
+        event_requests_collection = get_collection(collection_name)
         event_request = event_requests_collection.find_one({"_id": ObjectId(record_id)})
 
         if not event_request:

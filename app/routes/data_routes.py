@@ -1,3 +1,4 @@
+from typing_extensions import Collection
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
 from app.services.data_service import fetch_all_data, store_data, fetch_data_by_id, delete_event_request, approve_event_request
@@ -43,12 +44,12 @@ def fetch_by_id(collection_name, record_id):
 
 @data_bp.route('/<collection_name>/delete/<record_id>', methods=['DELETE'])
 @jwt_required()
-def delete_request(record_id):
+def delete_request(collection_name, record_id):
     logger.info(f"Deleting event request with ID: {record_id}")
-    return delete_event_request(record_id)
+    return delete_event_request(collection_name, record_id)
 
 @data_bp.route('/<collection_name>/approve/<record_id>', methods=['POST'])
 @jwt_required()
-def approve_request(record_id):
+def approve_request(collection_name, record_id):
     logger.info(f"Approving event request with ID: {record_id}")
     return approve_event_request(record_id)
