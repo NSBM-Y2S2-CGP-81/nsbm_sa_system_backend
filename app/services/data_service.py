@@ -108,14 +108,14 @@ def update_data(collection_name, record_id, updated_data):
         return {"error": str(e)}, 500
 
 
-def count_field_occurrences(collection_name, field_name, field_value):
-    """
-    Count how many times a specific field value is repeated in a collection.
-    """
+def count_field_occurrences(collection_name, field_name, field_value, event_id):
     try:
         collection = get_collection(collection_name)
-        count = collection.count_documents({field_name: field_value})
-        logger.info(f"Counted {count} occurrences of {field_name}='{field_value}' in {collection_name} collection.")
+        count = collection.count_documents({
+            field_name: field_value,
+            "event_id": event_id
+        })
+        logger.info(f"Counted {count} occurrences of {field_name}='{field_value}' with event_id='{event_id}' in {collection_name} collection.")
         return {"count": count}, 200
     except Exception as e:
         logger.error(f"Error counting occurrences in {collection_name}: {e}")

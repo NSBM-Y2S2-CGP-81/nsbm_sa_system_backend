@@ -80,6 +80,7 @@ def count_occurrences(collection_name):
         logger.warning(f"Unauthorized access attempt to count occurrences in {collection_name} collection.")
         return jsonify({"error": "Elevated privileges required"}), 403
 
+    event_id = request.args.get('event_data_get')
     field_name = request.args.get('field')
     field_value = request.args.get('value')
 
@@ -87,5 +88,5 @@ def count_occurrences(collection_name):
         logger.warning("Field name or value missing in count request.")
         return jsonify({"error": "Field name and value are required"}), 400
 
-    logger.success(f"Counting occurrences of {field_name}='{field_value}' in {collection_name} collection.")
-    return count_field_occurrences(collection_name, field_name, field_value)
+    logger.success(f"Counting occurrences of {field_name}='{field_value}' in {collection_name} collection. Event:{event_id}")
+    return count_field_occurrences(collection_name, field_name, field_value, event_id)
