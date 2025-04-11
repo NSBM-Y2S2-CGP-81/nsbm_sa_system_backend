@@ -12,6 +12,22 @@ def is_admin():
     claims = get_jwt()
     return claims.get("role") == "superuser"
 
+# Handle preflight OPTIONS requests
+@data_bp.route('/<collection_name>/store', methods=['POST', 'OPTIONS'])
+@data_bp.route('/<collection_name>/fetch', methods=['GET', 'OPTIONS'])
+@data_bp.route('/<collection_name>/fetch/<record_id>', methods=['GET', 'OPTIONS'])
+@data_bp.route('/<collection_name>/delete/<record_id>', methods=['DELETE', 'OPTIONS'])
+@data_bp.route('/<collection_name>/approve/<record_id>', methods=['POST', 'OPTIONS'])
+def handle_preflight(collection_name=None, record_id=None):
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        return response
+
+    # If not OPTIONS, route will be handled by the specific endpoint functions below
+    pass
+
 @data_bp.route('/<collection_name>/store', methods=['POST'])
 @jwt_required()
 def store(collection_name):
