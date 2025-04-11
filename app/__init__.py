@@ -6,6 +6,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from app.services.system_status_service import start_monitoring
 from app.services.loggerService import LoggerService
+from app.services.events_cleanup_service import initialize_events_cleanup
 import os
 
 # Initialize logger
@@ -30,6 +31,11 @@ def create_app():
     logger.info("Starting system status monitoring in the background...")
     start_monitoring()
     logger.success("Monitoring started!")
+
+    # Initialize events cleanup service
+    logger.info("Starting events cleanup service...")
+    initialize_events_cleanup()
+    logger.success("Events cleanup service started!")
 
     # Initialize extensions
     mongo.init_app(app)
