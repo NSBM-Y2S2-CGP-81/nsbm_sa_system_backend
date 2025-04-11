@@ -1,4 +1,3 @@
-# from enum import verify
 from app.config import db
 from bson import ObjectId
 from flask import jsonify
@@ -48,4 +47,48 @@ def fetch_data_by_id(collection_name, record_id):
             return jsonify(record), 200
         return {"error": "Record not found"}, 404
     except Exception as e:
+        return {"error": str(e)}, 500
+
+def delete_event_request(record_id):
+    try:
+        collection = get_collection('event_requests')
+        result = collection.delete_one({"_id": ObjectId(record_id)})
+
+        if result.deleted_count:
+            logger.success(f"Event request with ID {record_id} deleted successfully")
+            return {"message": "Event request deleted successfully"}, 200
+        else:
+            logger.warning(f"Event request with ID {record_id} not found")
+            return {"error": "Event request not found"}, 404
+    except Exception as e:
+        logger.error(f"Error deleting event request: {e}")
+        return {"error": str(e)}, 500
+
+def approve_event_request(record_id):
+    try:
+        # Get the event request
+        event_requests_collection = get_collection('event_requests')
+        event_request = event_requests_collection.find_one({"_id": ObjectId(record_id)})
+
+        if not event_request:
+            logger.warning(f"Event request with ID {record_id} not found")
+            return {"error": "Event request not found"}, 404
+
+        # Convert ObjectId to string for the event record
+        event_request['_id'] = str(event_request['_id'])
+
+        # Store the event request in the events collection
+        events_collection = get_collection('events')
+        result = events_collection.insert_one(event_request)
+
+        if result.inserted_id:
+            # Delete the event request after successfully adding it to events
+            event_requests_collection.delete_one({"_id": ObjectId(record_id)})
+            logger.success(f"Event request with ID {record_id} approved and moved to events")
+            return {"message": "Event request approved successfully", "event_id": str(result.inserted_id)}, 200
+        else:
+            logger.error(f"Failed to insert event into events collection")
+            return {"error": "Failed to approve event request"}, 500
+    except Exception as e:
+        logger.error(f"Error approving event request: {e}")
         return {"error": str(e)}, 500
