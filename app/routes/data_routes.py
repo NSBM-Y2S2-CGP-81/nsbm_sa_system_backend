@@ -75,10 +75,7 @@ def update_record(collection_name, record_id):
 @data_bp.route('/<collection_name>/count', methods=['GET'])
 @jwt_required()
 def count_occurrences(collection_name):
-    """
-    Count occurrences of a specific field value in a collection.
-    Example: /data/users/count?field=user_email&value=test@example.com
-    """
+
     if collection_name in ["users", "admins"] and not is_admin():
         logger.warning(f"Unauthorized access attempt to count occurrences in {collection_name} collection.")
         return jsonify({"error": "Elevated privileges required"}), 403
@@ -90,5 +87,5 @@ def count_occurrences(collection_name):
         logger.warning("Field name or value missing in count request.")
         return jsonify({"error": "Field name and value are required"}), 400
 
-    logger.info(f"Counting occurrences of {field_name}='{field_value}' in {collection_name} collection.")
+    logger.success(f"Counting occurrences of {field_name}='{field_value}' in {collection_name} collection.")
     return count_field_occurrences(collection_name, field_name, field_value)
