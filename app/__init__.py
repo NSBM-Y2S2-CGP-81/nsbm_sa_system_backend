@@ -6,7 +6,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from app.services.system_status_service import start_monitoring
 from app.services.loggerService import LoggerService
-from app.services.events_cleanup_service import initialize_events_cleanup
+from app.services.null_events_cleanup import initialize_events_cleanup
 import os
 
 # Initialize logger
