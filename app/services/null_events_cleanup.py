@@ -19,7 +19,7 @@ def is_valid_event(event):
     if not event:
         return False
 
-    required_fields = ["title", "description", "selectedDate", "startTime", "endTime"]
+    required_fields = ["event_name", "event_description", "selectedDate"]
 
     # Check if all required fields exist and are not None/empty
     for field in required_fields:
