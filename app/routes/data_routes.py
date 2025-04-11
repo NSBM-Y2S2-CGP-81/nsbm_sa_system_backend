@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
-from app.services.data_service import fetch_all_data, store_data, fetch_data_by_id, delete_event_request, approve_event_request
+from app.services.data_service import fetch_all_data, store_data, fetch_data_by_id, delete_event_request, approve_event_request, update_data
 from app.services.loggerService import LoggerService
 from flask import request, jsonify, make_response
 
