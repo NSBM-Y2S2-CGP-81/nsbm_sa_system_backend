@@ -41,13 +41,13 @@ def fetch_by_id(collection_name, record_id):
     logger.info(f"Fetching data by ID from {collection_name} collection, ID: {record_id}")
     return fetch_data_by_id(collection_name, record_id)
 
-@data_bp.route('/event_requests/delete/<record_id>', methods=['DELETE'])
+@data_bp.route('/<collection_name>/delete/<record_id>', methods=['DELETE'])
 @jwt_required()
 def delete_request(record_id):
     logger.info(f"Deleting event request with ID: {record_id}")
     return delete_event_request(record_id)
 
-@data_bp.route('/event_requests/approve/<record_id>', methods=['POST'])
+@data_bp.route('/<collection_name>/approve/<record_id>', methods=['POST'])
 @jwt_required()
 def approve_request(record_id):
     logger.info(f"Approving event request with ID: {record_id}")
