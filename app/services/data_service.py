@@ -36,6 +36,7 @@ def store_data(collection_name, data):
         result = collection.insert_one(data)
         return {"message": "Data stored successfully", "id": str(result.inserted_id)}, 201
     except Exception as e:
+        logger.error(f"Error storing data in {collection_name}: {e}")
         return {"error": str(e)}, 400
 
 def fetch_data_by_id(collection_name, record_id):
