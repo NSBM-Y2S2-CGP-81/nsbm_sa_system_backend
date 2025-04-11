@@ -60,3 +60,14 @@ def approve_request(collection_name, record_id):
         return response
     logger.info(f"Approving event request with ID: {record_id}")
     return approve_event_request(collection_name, record_id)
+
+@data_bp.route('/<collection_name>/update/<record_id>', methods=['PUT'])
+@jwt_required()
+def update_record(collection_name, record_id):
+    if collection_name in ["users", "admins"] and not is_admin():
+        logger.warning(f"Unauthorized update attempt in {collection_name} collection.")
+        return jsonify({"error": "Elevated privileges required"}), 403
+
+    data = request.json
+    logger.info(f"Updating record in {collection_name} collection with ID: {record_id}, DATA: {data}")
+    return update_data(collection_name, record_id, data)

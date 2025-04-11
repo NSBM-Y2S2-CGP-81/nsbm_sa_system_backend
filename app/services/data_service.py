@@ -81,3 +81,22 @@ def approve_event_request(collection_name, record_id):
     except Exception as e:
         logger.error(f"Error approving event request: {e}")
         return {"error": str(e)}, 500
+
+def update_data(collection_name, record_id, updated_data):
+    try:
+        collection = get_collection(collection_name)
+        result = collection.update_one(
+            {"_id": ObjectId(record_id)},
+            {"$set": updated_data}
+        )
+
+        if result.matched_count == 0:
+            logger.warning(f"Update failed. Record with ID {record_id} not found in {collection_name}")
+            return {"error": "Record not found"}, 404
+
+        logger.success(f"Record with ID {record_id} updated successfully in {collection_name}")
+        return {"message": "Record updated successfully"}, 200
+
+    except Exception as e:
+        logger.error(f"Error updating data in {collection_name}: {e}")
+        return {"error": str(e)}, 500
