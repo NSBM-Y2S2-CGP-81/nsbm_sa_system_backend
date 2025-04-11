@@ -74,21 +74,10 @@ def approve_event_request(collection_name, record_id):
             logger.warning(f"Event request with ID {record_id} not found")
             return {"error": "Event request not found"}, 404
 
-        # Convert ObjectId to string for the event record
-        event_request['_id'] = str(event_request['_id'])
+        event_requests_collection.delete_one({"_id": ObjectId(record_id)})
+        logger.success(f"Event request with ID {record_id} approved and moved to events")
+        return {"message": "Event request approved successfully", "event_id": record_id}, 200
 
-        # Store the event request in the events collection
-        events_collection = get_collection('events')
-        result = events_collection.insert_one(event_request)
-
-        if result.inserted_id:
-            # Delete the event request after successfully adding it to events
-            event_requests_collection.delete_one({"_id": ObjectId(record_id)})
-            logger.success(f"Event request with ID {record_id} approved and moved to events")
-            return {"message": "Event request approved successfully", "event_id": str(result.inserted_id)}, 200
-        else:
-            logger.error(f"Failed to insert event into events collection")
-            return {"error": "Failed to approve event request"}, 500
     except Exception as e:
         logger.error(f"Error approving event request: {e}")
         return {"error": str(e)}, 500
