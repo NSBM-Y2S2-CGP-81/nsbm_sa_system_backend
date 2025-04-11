@@ -34,8 +34,8 @@ def create_app():
 
     # Initialize events cleanup service
     logger.info("Starting events cleanup service...")
-    initialize_events_cleanup()
-    logger.success("Events cleanup service started!")
+    # initialize_events_cleanup()
+    # logger.success("Events cleanup service started!")
 
     # Initialize extensions
     mongo.init_app(app)
