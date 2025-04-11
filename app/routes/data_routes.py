@@ -1,4 +1,4 @@
-from typing_extensions import Collection
+# from typing_extensions import Collection
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
 from app.services.data_service import fetch_all_data, store_data, fetch_data_by_id, delete_event_request, approve_event_request
@@ -52,4 +52,4 @@ def delete_request(collection_name, record_id):
 @jwt_required()
 def approve_request(collection_name, record_id):
     logger.info(f"Approving event request with ID: {record_id}")
-    return approve_event_request(record_id)
+    return approve_event_request(collection_name, record_id)
