@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
 from app.services.data_service import fetch_all_data, store_data, fetch_data_by_id, delete_event_request, approve_event_request
 from app.services.loggerService import LoggerService
+from flask import request, jsonify, make_response
 
 data_bp = Blueprint('data', __name__)
 logger = LoggerService()
@@ -47,8 +48,15 @@ def delete_request(collection_name, record_id):
     logger.info(f"Deleting event request with ID: {record_id}")
     return delete_event_request(collection_name, record_id)
 
-@data_bp.route('/<collection_name>/approve/<record_id>', methods=['POST'])
-@jwt_required()
+@data_bp.route('/<collection_name>/approve/<record_id>', methods=['POST', 'OPTIONS'])
+@jwt_required(optional=True)
 def approve_request(collection_name, record_id):
+    if request.method == 'OPTIONS':
+        # Return a 200 OK for preflight requests
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        return response
     logger.info(f"Approving event request with ID: {record_id}")
     return approve_event_request(collection_name, record_id)
