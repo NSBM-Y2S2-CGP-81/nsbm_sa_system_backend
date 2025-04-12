@@ -1,8 +1,9 @@
 from app.config import db
-from bson import ObjectId
+from bson import ObjectId, json_util
 from flask import jsonify
 from flask import request
 from datetime import datetime
+import json
 from app.services.loggerService import LoggerService
 
 logger = LoggerService()
@@ -142,8 +143,12 @@ def execute_mongodb_query(data):
         # Get the collection
         collection = db[collection_name]
 
+        # Get the first key-value pair from sort_config and use it for sorting
+        # This handles the conversion from dict to MongoDB sort format
+        sort_field, sort_direction = next(iter(sort_config.items()))
+
         # Execute the query with pagination and sorting
-        results = list(collection.find(query).sort(list(sort_config.items())[0]).skip(skip).limit(limit))
+        results = list(collection.find(query).sort(sort_field, sort_direction).skip(skip).limit(limit))
 
         # Get total count for pagination info
         total_count = collection.count_documents(query)
