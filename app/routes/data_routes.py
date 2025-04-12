@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
-from app.services.data_service import fetch_all_data, store_data, fetch_data_by_id, delete_event_request, approve_event_request, update_data, count_field_occurrences
+from app.services.data_service import fetch_all_data, store_data, fetch_data_by_id, delete_event_request, approve_event_request, update_data, count_field_occurrences, execute_mongodb_query
 from app.services.loggerService import LoggerService
 from flask import request, jsonify, make_response
 
@@ -90,3 +90,18 @@ def count_occurrences(collection_name):
 
     logger.success(f"Counting occurrences of {field_name}='{field_value}' in {collection_name} collection. Event:{event_id}")
     return count_field_occurrences(collection_name, field_name, field_value, event_id)
+
+@data_bp.route('/mongodb/query', methods=['POST'])
+@jwt_required()
+def mongodb_query():
+    # Check if user is admin
+    if not is_admin():
+        logger.warning("Unauthorized attempt to access MongoDB query endpoint")
+        return jsonify({"error": "Admin privileges required"}), 403
+
+    data = request.json
+    logger.info(f"MongoDB query requested with params: {data}")
+
+    # Execute the query
+    result, status_code = execute_mongodb_query(data)
+    return jsonify(result), status_code

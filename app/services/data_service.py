@@ -120,3 +120,54 @@ def count_field_occurrences(collection_name, field_name, field_value, event_id):
     except Exception as e:
         logger.error(f"Error counting occurrences in {collection_name}: {e}")
         return {"error": str(e)}, 500
+
+def execute_mongodb_query(data):
+    """
+    Execute a MongoDB query with pagination, sorting, and filtering
+    Only to be used by administrative users
+    """
+    try:
+        collection_name = data.get('collection')
+        query = data.get('query', {})
+        sort_config = data.get('sort', {'_id': 1})
+        page = int(data.get('page', 1))
+        limit = int(data.get('limit', 10))
+
+        # Calculate skip amount for pagination
+        skip = (page - 1) * limit
+
+        if not collection_name:
+            return {"error": "Collection name is required"}, 400
+
+        # Get the collection
+        collection = db[collection_name]
+
+        # Execute the query with pagination and sorting
+        results = list(collection.find(query).sort(list(sort_config.items())[0]).skip(skip).limit(limit))
+
+        # Get total count for pagination info
+        total_count = collection.count_documents(query)
+
+        # Convert ObjectId to string for JSON serialization
+        for result in results:
+            if '_id' in result:
+                result['_id'] = str(result['_id'])
+
+        # Parse results to ensure JSON serialization works
+        parsed_results = json.loads(json_util.dumps(results))
+
+        logger.info(f"Admin executed MongoDB query on {collection_name}: {query}")
+
+        return {
+            "data": parsed_results,
+            "pagination": {
+                "total": total_count,
+                "page": page,
+                "limit": limit,
+                "pages": (total_count + limit - 1) // limit  # Ceiling division for total pages
+            }
+        }, 200
+
+    except Exception as e:
+        logger.error(f"Error executing MongoDB query: {str(e)}")
+        return {"error": str(e)}, 500
