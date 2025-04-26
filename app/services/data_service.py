@@ -32,6 +32,17 @@ def store_data(collection_name, data):
             if selected_date <= today:
                 return {"message": "Invalid Date"}, 401
 
+            if "location" in data and "selectedTime" in data:
+                event_requests_collection = get_collection("event_requests")
+                existing_event = event_requests_collection.find_one({
+                    "location": data["location"],
+                    "selectedDate": data["selectedDate"],
+                    "selectedTime": data["selectedTime"]
+                })
+
+                if existing_event:
+                    return {"message": "Location is already taken on the selected date!"}, 409
+
         if collection_name == "event_registrations":
             collection = get_collection(collection_name)
             existing_registration = collection.find_one({"user_email": data.get("user_email"), "event_id": data.get("event_id")})
