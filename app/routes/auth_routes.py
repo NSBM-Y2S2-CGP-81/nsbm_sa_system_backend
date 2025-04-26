@@ -22,3 +22,15 @@ def admin():
     data = request.json
     logger.info(f"Admin login triggered, DATA: {data}")
     return admin_login(data)
+
+@auth_bp.route('/mic/register', methods=['POST'])
+def mic_register_route():
+    data = request.json
+    logger.info(f"MIC Registration triggered, DATA: {data}")
+    return auth_service.mic_register(data)
+
+@auth_bp.route('/mic/login', methods=['POST'])
+def mic_login_route():
+    data = request.json
+    logger.info(f"MIC Login triggered, DATA: {data}")
+    return auth_service.mic_login(data)

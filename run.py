@@ -10,7 +10,7 @@ def initialize_database():
         'users', 'students', 'lecturers', 'staff', 'vendors',
         'events', 'event_registrations', 'timetable', 'food_orders',
         'food_order_items', 'queue_management', 'campus_facilities',
-        'payments', 'todays_pick', 'news', 'crowd_uplink'
+        'payments', 'todays_pick', 'news', 'crowd_uplink', 'mic_users'
     ]
 
     for collection_name in collections:
