@@ -42,9 +42,9 @@ def store_data(collection_name, data):
 
                 events_collection = get_collection("events")
                 existing_event = events_collection.find_one({
-                    "location": data["event_venue"],
-                    "selectedDate": data["event_date"],
-                    "selectedTime": data["event_time"]
+                    "event_venue": data["location"],
+                    "event_date": data["selectedDate"],
+                    "event_time": data["selectedTime"]
                 })
 
                 if existing_event:
