@@ -1,6 +1,6 @@
 import threading
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from bson.errors import InvalidId
 from app.config import db
 from app.services.loggerService import LoggerService
@@ -34,22 +34,10 @@ def is_valid_event(event):
 def cleanup_events():
     """
     Clean up events collection by removing:
-    1. Events older than 24 hours
-    2. Invalid or null events
+    1. Invalid or null events
     """
     try:
         collection = get_events_collection()
-
-        # Calculate cutoff time (24 hours ago)
-        cutoff_time = datetime.now() - timedelta(hours=24)
-
-        # Delete events older than 24 hours
-        # Assuming events have a selectedDate field in ISO format
-        date_filter = {"selectedDate": {"$lt": cutoff_time.strftime("%Y-%m-%d")}}
-        old_events_result = collection.delete_many(date_filter)
-
-        if old_events_result.deleted_count > 0:
-            logger.info(f"Deleted {old_events_result.deleted_count} events older than 24 hours")
 
         # Find all events to check validity
         all_events = list(collection.find())
