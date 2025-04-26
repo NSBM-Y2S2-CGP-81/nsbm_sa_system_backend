@@ -40,6 +40,13 @@ def store_data(collection_name, data):
                     "selectedTime": data["selectedTime"]
                 })
 
+                event_requests_collection = get_collection("events")
+                existing_event = event_requests_collection.find_one({
+                    "location": data["event_venue"],
+                    "selectedDate": data["event_date"],
+                    "selectedTime": data["event_time"]
+                })
+
                 if existing_event:
                     return {"message": "Location is already taken on the selected date!"}, 409
 
