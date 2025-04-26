@@ -55,6 +55,23 @@ def login_user(data):
         "created_at": user["created_at"],
     }), 200
 
+# def mic_login(data):
+#     mic = mongo.db.mic.find_one({"email": data["email"]})
+#     if not mic or not bcrypt.check_password_hash(mic["password"], data["password"]):
+#         return jsonify({"error": "Invalid credentials"}), 401
+
+#     additional_claims = {
+#         "user_type": "mic",
+#         "role": "elevateduser",
+#         "mic_id": str(admins.get("_id"))
+#     }
+#     access_token = create_access_token(identity=admins["email"], additional_claims=additional_claims)
+#     return jsonify({
+#         "access_token": access_token,
+#         "message": "Admin logged in successfully"
+#     }), 200
+
+
 def admin_login(data):
     admins = mongo.db.admin.find_one({"email": data["email"]})
     if not admins or not bcrypt.check_password_hash(admins["password"], data["password"]):

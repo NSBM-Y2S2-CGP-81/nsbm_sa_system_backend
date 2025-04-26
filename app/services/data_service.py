@@ -176,3 +176,21 @@ def execute_mongodb_query(data):
     except Exception as e:
         logger.error(f"Error executing MongoDB query: {str(e)}")
         return {"error": str(e)}, 500
+
+def create_collection(collection_name):
+    """Create a new collection in MongoDB database."""
+    try:
+        # Check if the collection already exists
+        if collection_name in db.list_collection_names():
+            logger.warning(f"Collection '{collection_name}' already exists")
+            return {"error": f"Collection '{collection_name}' already exists"}, 400
+
+        # Create a new collection by simply inserting and removing a dummy document
+        # This is the common way to explicitly create a MongoDB collection
+        db.create_collection(collection_name)
+
+        logger.success(f"Collection '{collection_name}' created successfully")
+        return {"message": f"Collection '{collection_name}' created successfully"}, 201
+    except Exception as e:
+        logger.error(f"Error creating collection: {e}")
+        return {"error": str(e)}, 500

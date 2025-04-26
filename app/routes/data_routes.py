@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
-from app.services.data_service import fetch_all_data, store_data, fetch_data_by_id, delete_event_request, approve_event_request, update_data, count_field_occurrences, execute_mongodb_query
+from app.services.data_service import fetch_all_data, store_data, fetch_data_by_id, delete_event_request, approve_event_request, update_data, count_field_occurrences, execute_mongodb_query, create_collection
 from app.services.loggerService import LoggerService
 from flask import request, jsonify, make_response
 
@@ -105,3 +105,42 @@ def mongodb_query():
     # Execute the query
     result, status_code = execute_mongodb_query(data)
     return jsonify(result), status_code
+
+@data_bp.route('/create-collection', methods=['POST'])
+@jwt_required()
+def create_new_collection():
+    # Only admin users should be able to create collections
+    if not is_admin():
+        logger.warning("Unauthorized attempt to create a collection")
+        return jsonify({"error": "Admin privileges required"}), 403
+
+    data = request.json
+    collection_name = data.get('name')
+
+    if not collection_name:
+        logger.warning("Collection name is required but was not provided")
+        return jsonify({"error": "Collection name is required"}), 400
+
+    # Validate collection name (optional but recommended)
+    if not collection_name.isalnum() and not "_" in collection_name:
+        logger.warning(f"Invalid collection name format: {collection_name}")
+        return jsonify({"error": "Collection name must contain only alphanumeric characters and underscores"}), 400
+
+    logger.info(f"Creating new collection: {collection_name}")
+    return create_collection(collection_name)
+
+@data_bp.route('/<collection_name>/create', methods=['POST'])
+@jwt_required()
+def create_document(collection_name):
+    """Create a new document in the specified collection."""
+    if collection_name in ["users", "admins"] and not is_admin():
+        logger.warning(f"Unauthorized access attempt to create document in {collection_name} collection.")
+        return jsonify({"error": "Elevated privileges required"}), 403
+
+    data = request.json
+    if not data:
+        logger.warning(f"No data provided for document creation in {collection_name}")
+        return jsonify({"error": "Document data is required"}), 400
+
+    logger.info(f"Creating new document in {collection_name} collection, DATA: {data}")
+    return store_data(collection_name, data)
