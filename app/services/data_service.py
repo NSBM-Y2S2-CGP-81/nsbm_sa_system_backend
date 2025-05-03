@@ -1,3 +1,4 @@
+from app import jwt
 from app.config import db
 from bson import ObjectId, json_util
 from flask import jsonify
@@ -17,7 +18,30 @@ def get_collection(collection_name):
 def fetch_all_data(collection_name):
     try:
         collection = get_collection(collection_name)
-        records = list(collection.find())
+
+        jwt_claims = None
+        try:
+            from flask_jwt_extended import get_jwt
+            jwt_claims = get_jwt()
+        except:
+            jwt_claims = None
+
+        if collection_name == "events" and jwt_claims and jwt_claims.get("user_type") == "mic":
+            mic_society_name = None
+
+            mic_email = jwt_claims.get("sub")
+            if mic_email:
+                mic_user = db["mic_users"].find_one({"email": mic_email})
+                if mic_user:
+                    mic_society_name = mic_user.get("society_name")
+            if mic_society_name:
+                records = list(collection.find({"event_held_by": mic_society_name}))
+                logger.info(f"MIC user filtering events for society: {mic_society_name}")
+            else:
+                records = list(collection.find())
+        else:
+            records = list(collection.find())
+
         for record in records:
             record['_id'] = str(record['_id'])
         return jsonify(records), 200
