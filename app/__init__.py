@@ -49,10 +49,12 @@ def create_app():
     from app.routes.auth_routes import auth_bp
     from app.routes.data_routes import data_bp
     from app.routes.custom_routes import custom_bp
+    from app.routes.email_routes import email_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(data_bp, url_prefix='/data')
     app.register_blueprint(custom_bp, url_prefix='/custom')
+    app.register_blueprint(email_bp, url_prefix='/email')
 
     return app
 
