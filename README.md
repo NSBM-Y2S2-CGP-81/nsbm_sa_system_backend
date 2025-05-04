@@ -35,7 +35,10 @@ This backend serves as the central hub connecting different components of the NS
    MONGO_URI="mongodb://localhost:27017/nsbm_sa"
    JWT_SECRET_KEY="your_secret_key_here"
    ```
-
+   or do it directly in your terminal:
+   ```
+   export JWT_SECRET_KEY=a3f4e7b2c6d8e1f7a9b0c2d4e6f8a1b3c5d7e9f0a2c4e6d8b0a1c3e5f7a9d2
+   ```
    Alternatively, you can export these variables directly:
    ```bash
    # For Windows CMD:
