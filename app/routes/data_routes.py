@@ -24,6 +24,9 @@ def is_admin():
 
 def check_admin_access(collection_name, action="access"):
     """Common function to check admin access to sensitive collections."""
+    if  action == "fetch" and collection_name == "events":
+        # Allow non-admins to fetch events
+        return None
     if collection_name in SENSITIVE_COLLECTIONS and not is_admin():
         logger.warning(f"Unauthorized {action} attempt to {collection_name} collection.")
         return jsonify({"error": "Elevated privileges required"}), 403
@@ -43,7 +46,7 @@ def store(collection_name):
 @data_bp.route('/<collection_name>/fetch', methods=['GET'])
 @jwt_required()
 def fetch_all(collection_name):
-    access_check = check_admin_access(collection_name, "access")
+    access_check = check_admin_access(collection_name, "fetch")
     if access_check:
         return access_check
 
