@@ -66,22 +66,29 @@ def store_data(collection_name, data):
             if "location" in data and "selectedTime" in data:
                 # Retrieving data from event_requests collection
                 event_requests_collection = get_collection("event_requests")
-                # Check if the location is already taken on the selected date and time on  event_requests
+                # Check if the location is already taken on the selected date and time on event_requests
+                # Only consider events that don't have a "Declined" status
                 existing_event = event_requests_collection.find_one({
                     "location": data["location"],
                     "selectedDate": data["selectedDate"],
-                    "selectedTime": data["selectedTime"]
+                    "selectedTime": data["selectedTime"],
+                    "status": {"$ne": "Declined"}
                 })
+
+                if existing_event:
+                    return {"message": "Location is already taken on the selected date!"}, 409
+
                 events_collection = get_collection("events")
-                # Check if the location is already taken on the selected date and time on events
                 existing_event = events_collection.find_one({
                     "event_venue": data["location"],
                     "event_date": data["selectedDate"],
-                    "event_time": data["selectedTime"]
+                    "event_time": data["selectedTime"],
+                    "event_status": {"$ne": "Declined"}
                 })
                 # If the location is already taken, return an error response
                 if existing_event:
                     return {"message": "Location is already taken on the selected date!"}, 409
+
         # Check if the collection name is event_registrations
         if collection_name == "event_registrations":
             # Check if the user is already registered for the event
