@@ -97,9 +97,9 @@ def approve_request(collection_name, record_id):
 @data_bp.route('/<collection_name>/update/<record_id>', methods=['PUT'])
 @jwt_required()
 def update_record(collection_name, record_id):
-    access_check = check_admin_access(collection_name, "update")
-    if access_check:
-        return access_check
+    # access_check = check_admin_access(collection_name, "update")
+    # if access_check:
+    #     return access_check
 
     data = request.json
     logger.info(f"Updating record in {collection_name} collection with ID: {record_id}, DATA: {data}")
