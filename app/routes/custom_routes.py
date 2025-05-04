@@ -12,6 +12,11 @@ def is_admin():
     claims = get_jwt()
     return claims.get("role") == "superuser"
 
+def check_mic():
+    """Check if the current user is a MIC."""
+    claims = get_jwt()
+    return claims.get("role") == "elevateduser"
+
 @custom_bp.route('/execute', methods=['POST'])
 @jwt_required()
 def execute():
@@ -22,7 +27,7 @@ def execute():
 @custom_bp.route('/hash-password', methods=['POST'])
 @jwt_required()
 def hash_password():
-    if not is_admin():
+    if not is_admin() and not check_mic():
         logger.warning("Non-admin user attempted to access hash-password endpoint")
         return jsonify({"error": "Admin privileges required"}), 403
 
