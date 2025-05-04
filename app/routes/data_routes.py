@@ -15,7 +15,7 @@ def is_admin():
 @data_bp.route('/<collection_name>/store', methods=['POST'])
 @jwt_required()
 def store(collection_name):
-    if collection_name in ["users", "admins"] and not is_admin():
+    if collection_name in ["users", "admins", "events"] and not is_admin():
         logger.warning(f"Unauthorized access attempt to {collection_name} collection.")
         return jsonify({"error": "Elevated privileges required"}), 403
     data = request.json
@@ -46,11 +46,19 @@ def fetch_by_id(collection_name, record_id):
 @jwt_required()
 def delete_request(collection_name, record_id):
     logger.info(f"Deleting event request with ID: {record_id}")
+    # Check if user is admin and collection is sensitive
+    if collection_name in ["users", "admins", "event_requests", "events"] and not is_admin():
+        return jsonify({"error": "Elevated privileges required"}), 403
     return delete_event_request(collection_name, record_id)
 
 @data_bp.route('/<collection_name>/approve/<record_id>', methods=['POST', 'OPTIONS'])
 @jwt_required(optional=True)
 def approve_request(collection_name, record_id):
+    # Check if user is admin
+    if collection_name in ["users", "admins", "event_requests"] and not is_admin():
+        # Log the unauthorized access attempt
+        logger.warning(f"Unauthorized access attempt to approve request in {collection_name} collection.")
+        return jsonify({"error": "Elevated privileges required"}), 403
     if request.method == 'OPTIONS':
         # Return a 200 OK for preflight requests
         response = make_response()
@@ -64,7 +72,7 @@ def approve_request(collection_name, record_id):
 @data_bp.route('/<collection_name>/update/<record_id>', methods=['PUT'])
 @jwt_required()
 def update_record(collection_name, record_id):
-    if collection_name in ["users", "admins"] and not is_admin():
+    if collection_name in ["users", "admins", "events"] and not is_admin():
         logger.warning(f"Unauthorized update attempt in {collection_name} collection.")
         return jsonify({"error": "Elevated privileges required"}), 403
 

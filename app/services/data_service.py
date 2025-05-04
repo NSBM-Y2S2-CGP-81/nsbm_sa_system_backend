@@ -50,34 +50,48 @@ def fetch_all_data(collection_name):
 
 def store_data(collection_name, data):
     try:
+        # Check if the collection name is event_requests
         if collection_name == "event_requests" and "selectedDate" in data:
+            # Check if the selected date is in the past
             selected_date = datetime.strptime(data["selectedDate"], "%Y-%m-%d").date()
+            # Get today's date
             today = datetime.now().date()
+            # Check if the selected date is less than or equal to today's date
             if selected_date <= today:
+                logger.warning(f"Invalid date provided: {data['selectedDate']}")
+                # Return an error response
                 return {"message": "Invalid Date"}, 401
 
+            # Checking if the location is already reserved
             if "location" in data and "selectedTime" in data:
+                # Retrieving data from event_requests collection
                 event_requests_collection = get_collection("event_requests")
+                # Check if the location is already taken on the selected date and time on  event_requests
                 existing_event = event_requests_collection.find_one({
                     "location": data["location"],
                     "selectedDate": data["selectedDate"],
                     "selectedTime": data["selectedTime"]
                 })
-
                 events_collection = get_collection("events")
+                # Check if the location is already taken on the selected date and time on events
                 existing_event = events_collection.find_one({
                     "event_venue": data["location"],
                     "event_date": data["selectedDate"],
                     "event_time": data["selectedTime"]
                 })
-
+                # If the location is already taken, return an error response
                 if existing_event:
                     return {"message": "Location is already taken on the selected date!"}, 409
-
+        # Check if the collection name is event_registrations
         if collection_name == "event_registrations":
+            # Check if the user is already registered for the event
             collection = get_collection(collection_name)
+            # Check if the user is already registered for the event
             existing_registration = collection.find_one({"user_email": data.get("user_email"), "event_id": data.get("event_id")})
+            # If the user is already registered, return an error response
             if existing_registration:
+                logger.warning(f"User {data.get('user_email')} already registered for event {data.get('event_id')}")
+                # Return an error response
                 return {"message": "User already signed up for this event"}, 409
 
         collection = get_collection(collection_name)
