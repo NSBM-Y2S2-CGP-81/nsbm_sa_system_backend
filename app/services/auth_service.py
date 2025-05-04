@@ -2,6 +2,7 @@ from flask import jsonify
 from app import mongo, bcrypt
 from flask_jwt_extended import create_access_token
 from datetime import datetime
+from bson.objectid import ObjectId
 
 def register_user(data):
     required_fields = [
@@ -17,7 +18,7 @@ def register_user(data):
         return jsonify({"error": "User already exists"}), 409
 
     hashed_pw = bcrypt.generate_password_hash(data["password"]).decode('utf-8')
-    mongo.db.users.insert_one({
+    result = mongo.db.users.insert_one({
         "full_name": data["full_name"],
         "email": data["email"],
         "password": hashed_pw,
@@ -33,16 +34,25 @@ def register_user(data):
         "updated_at": data["updated_at"]
     })
     access_token = create_access_token(identity=data["email"])
-    return jsonify({"message": "User registered successfully", "access_token": access_token}), 201
+    return jsonify({
+        "message": "User registered successfully",
+        "access_token": access_token,
+        "user_id": str(result.inserted_id)
+    }), 201
 
 def login_user(data):
     user = mongo.db.users.find_one({"email": data["email"]})
     if not user or not bcrypt.check_password_hash(user["password"], data["password"]):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = create_access_token(identity=user["email"])
+    additional_claims = {
+        "user_id": str(user["_id"]),
+        "user_type": user["user_type"]
+    }
+    access_token = create_access_token(identity=user["email"], additional_claims=additional_claims)
     return jsonify({
         "access_token": access_token,
+        "user_id": str(user["_id"]),
         "full_name": user["full_name"],
         "email": user["email"],
         "phone_number": user["phone_number"],
@@ -67,7 +77,7 @@ def mic_register(data):
         return jsonify({"error": "Society with this email already exists"}), 409
 
     hashed_pw = bcrypt.generate_password_hash(data["password"]).decode('utf-8')
-    mongo.db.mic_users.insert_one({
+    result = mongo.db.mic_users.insert_one({
         "email": data["email"],
         "society_name": data["society_name"],
         "password": hashed_pw,
@@ -76,12 +86,15 @@ def mic_register(data):
 
     additional_claims = {
         "user_type": "mic",
-        "role": "elevateduser"
+        "role": "elevateduser",
+        "user_id": str(result.inserted_id)
     }
     access_token = create_access_token(identity=data["email"], additional_claims=additional_claims)
     return jsonify({
         "message": "MIC registered successfully",
-        "access_token": access_token
+        "access_token": access_token,
+        "mic_id": str(result.inserted_id),
+        "user_id": str(result.inserted_id)
     }), 201
 
 def mic_login(data):
@@ -92,11 +105,14 @@ def mic_login(data):
     additional_claims = {
         "user_type": "mic",
         "role": "elevateduser",
-        "mic_id": str(mic.get("_id"))
+        "mic_id": str(mic.get("_id")),
+        "user_id": str(mic.get("_id"))
     }
     access_token = create_access_token(identity=mic["email"], additional_claims=additional_claims)
     return jsonify({
         "access_token": access_token,
+        "mic_id": str(mic["_id"]),
+        "user_id": str(mic["_id"]),
         "email": mic["email"],
         "society_name": mic["society_name"],
         "message": "MIC logged in successfully"
@@ -111,10 +127,13 @@ def admin_login(data):
     additional_claims = {
         "user_type": "admin",
         "role": "superuser",
-        "admin_id": str(admins.get("_id"))
+        "admin_id": str(admins.get("_id")),
+        "user_id": str(admins.get("_id"))
     }
     access_token = create_access_token(identity=admins["email"], additional_claims=additional_claims)
     return jsonify({
         "access_token": access_token,
+        "admin_id": str(admins["_id"]),
+        "user_id": str(admins["_id"]),
         "message": "Admin logged in successfully"
     }), 200
