@@ -24,7 +24,7 @@ def is_admin():
 
 def check_admin_access(collection_name, action="access"):
     """Common function to check admin access to sensitive collections."""
-    if  action == "fetch" and collection_name == "events":
+    if (action == "fetch" and collection_name == "events") or (action == "count" and collection_name == "events"):
         # Allow non-admins to fetch events
         return None
     if collection_name in SENSITIVE_COLLECTIONS and not is_admin():
@@ -108,7 +108,7 @@ def update_record(collection_name, record_id):
 @data_bp.route('/<collection_name>/count', methods=['GET'])
 @jwt_required()
 def count_occurrences(collection_name):
-    access_check = check_admin_access(collection_name, "count occurrences in")
+    access_check = check_admin_access(collection_name, "count")
     if access_check:
         return access_check
 
